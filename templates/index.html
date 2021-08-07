@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QAサイト</title>
+    <link href="../static/css/lib/bootstrap.min.css" rel="stylesheet">
+    <script src="../static/js/lib/vue.js"></script>
+    <script src="../static/js/lib/jquery-3.6.0.js"></script>
+    <style>
+      .form-control {
+        width: 30%;
+      }
+    </style>
+  </head>
+
+  <body>
+    {% raw %}
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-qalist-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">質問一覧</button>
+        <button class="nav-link" id="nav-qaform-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">質問する</button>
+      </div>
+    </nav>
+    <div class="tab-content">
+      <div class="tab-pane fade show active"role="tabpanel" aria-labelledby="nav-home-tab">
+        <div id="qalist">
+          <div class="accordion">
+            <div class="accordion-item" v-for="question in questions">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  {{ question.title }}
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                  <h2>質問内容</h2>
+                  <p>{{ question.content }}</p>
+                  <h2>回答</h2>
+                  <p v-if="question.ans">{{ question.ans.content }}</p>
+                  <p v-else="question.ans">まだ回答はありません</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div id="qaform">
+          <form method="POST">
+            <div class="mb-3">
+              <label>お名前</label>
+              <input type="name" class="form-control" placeholder="全角10文字以内">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">本文</label>
+              <textarea class="form-control" rows="3" placeholder="全角500文字以内"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3">送信</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endraw %}
+    <script>
+      const url = './get_data';
+      const options = {
+          method: 'GET'
+      }
+
+      var questions;
+
+      function getQuestion(url, options){
+        return fetch(url, options)
+            .then( response => response.json() );
+      }
+      async function getQ(url, options){
+          const response = await getQuestion(url, options);
+          return response.questions;
+      }
+
+      document.getElementById("nav-qalist-tab")
+        .addEventListener("click", () =>{
+            questions = getQ(url, options).questions;
+        })
+
+    </script>
+    <script src="../static/js/lib/bootstrap.min.js"></script>
+    <script src="../static/js/qalist.js"></script>
+    <script src="../static/js/qaform.js"></script>
+  
+  </body>
+
+</html>
